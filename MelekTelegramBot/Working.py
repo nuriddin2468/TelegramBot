@@ -5,12 +5,17 @@ from telebot.types import Message
 TOKEN = "836997197:AAFvCr4oePuitIZJ6-cKLXNufSfquho6nz8"
 bot = telebot.TeleBot(TOKEN)
 urlMover = 'https://mover.uz'
+urlVideo = 'https://v.mover.uz'
 urlsrc = '/search?val='
 
 cat = {
     'anime': '19',
     'music': '5',
 }
+
+
+def getVideo(href):
+    return urlVideo + href[6:-1] + '_h.mp4'
 
 
 def findFromMover(data='', category=''):
@@ -23,7 +28,10 @@ def findFromMover(data='', category=''):
     data = soup.find('div', {"class": "video-list vertical"})
     data = data.find('div', {"class": "video s first"})
     x = data.find('a', {"class": "image"})
-    return x['href'],x['title']
+    href = x['href']
+    href = getVideo(href)
+    print(href)
+    return href, x['title']
 
 
 @bot.message_handler(func=lambda message: True, commands=['start'])
@@ -40,7 +48,7 @@ def get_text_messages(message):
         try:
             href, title = findFromMover(cmd[1:], cat['anime'])
             if title:
-                bot.send_message(message.chat.id, title + '\n' + urlMover + href)
+                bot.send_message(message.chat.id, title + '\n' + href)
         except Exception:
                 bot.send_message(message.chat.id, 'Anime not found!')
     elif cmd[0] == '/music':
