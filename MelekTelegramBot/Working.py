@@ -55,7 +55,7 @@ def get_text_messages(message):
         try:
             href, title = findFromMover(cmd[1:], cat['music'])
             if title:
-                bot.send_message(message.chat.id, title + '\n' + urlMover + href)
+                bot.send_message(message.chat.id, title + '\n' + href)
         except Exception:
             bot.send_message(message.chat.id, 'Music not found!')
 
