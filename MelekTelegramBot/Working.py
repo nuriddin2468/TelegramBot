@@ -7,18 +7,22 @@ bot = telebot.TeleBot(TOKEN)
 urlMover = 'https://mover.uz'
 urlsrc = '/search?val='
 
+cat = {
+    'anime': '19',
+    'music': '5',
+}
 
-def findFromMover(data):
+
+def findFromMover(data='', category=''):
     txt = ''
     for i in data:
         txt = txt + i + '+'
-    html = requests.get(urlMover+urlsrc+txt)
+    html = requests.get(urlMover+urlsrc+txt + '&category=' + category)
     html = html.content
     soup = BeautifulSoup(html)
     data = soup.find('div', {"class": "video-list vertical"})
     data = data.find('div', {"class": "video s first"})
     x = data.find('a', {"class": "image"})
-
     return x['href'],x['title']
 
 
@@ -32,8 +36,20 @@ def get_text_messages(message):
     if message.text == '/razrab':
         bot.send_message(message.chat.id, "Мой царь и бог это Нуриддин)")
     cmd = message.text.split()
-    if cmd[0] == '/search':
-        href, title = findFromMover(cmd[1:])
-        bot.send_message(message.chat.id, title + '\n' + urlMover + href)
+    if cmd[0] == '/anime':
+        try:
+            href, title = findFromMover(cmd[1:], cat['anime'])
+            if title:
+                bot.send_message(message.chat.id, title + '\n' + urlMover + href)
+        except Exception:
+                bot.send_message(message.chat.id, 'Anime not found!')
+    elif cmd[0] == '/music':
+        try:
+            href, title = findFromMover(cmd[1:], cat['music'])
+            if title:
+                bot.send_message(message.chat.id, title + '\n' + urlMover + href)
+        except Exception:
+            bot.send_message(message.chat.id, 'Music not found!')
+
 
 bot.polling()
